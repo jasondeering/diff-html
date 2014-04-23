@@ -1,0 +1,26 @@
+{
+  "name": "diff2html",
+  "version": "0.1.1",
+  "description": "Generate colorized HTML diffs.",
+  "keywords": [
+    "git",
+    "diff"
+  ],
+  "homepage": "https://github.com/jdeering/diff2html",
+  "bugs": "https://github.com/jdeering/diff2html",
+  "author": {
+    "name": "Jason Deering",
+    "email": "deeringj2@gmail.com"
+  },
+  "bin": {
+    "diff2html": "./diff-html.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/jdeering/diff2html.git"
+  },
+  "dependencies": {
+    "open": "0.0.5",
+    "nexe": "^0.2.8"
+  }
+}
