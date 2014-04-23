@@ -21,6 +21,8 @@
   },
   "dependencies": {
     "open": "0.0.5",
-    "nexe": "^0.2.8"
+    "nexe": "^0.2.8",
+    "underscore": "^1.6.0",
+    "gift": "^0.4.0"
   }
 }

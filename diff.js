@@ -1,5 +1,9 @@
 var spawn = require( "child_process" ).spawn;
 
+var git = require('gift');
+
+var repo = git __dirname;
+
 var gitDiff = function( args, fn ) {
 	var childArgs = args ? [ "diff" ].concat( args.split( /\s/ ) ) : [ "diff" ],
 		child = spawn( "git", childArgs ),

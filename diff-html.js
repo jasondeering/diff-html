@@ -1,24 +1,12 @@
 #!/usr/bin/env node
 
-var fs = require( "fs" ),
-	open = require( "open" ),
-	diff = require( "./diff" );
+var fs = require('fs'),
+	open = require('open'),
+	git = require('gift'),
+	_ = require('underscore');
 
-diff( process.argv.slice( 2 ).join( " " ), function( error, parsedDiff ) {
-	if ( error ) {
-		process.stderr.write( error );
-		return;
-	}
 
-	if ( !parsedDiff ) {
-		console.log( "No differences" );
-		return;
-	}
-
-	generatePrettyDiff( parsedDiff );
-});
-
-function generatePrettyDiff( parsedDiff ) {
+var generatePrettyDiff = function ( parsedDiff ) {
 	var template = fs.readFileSync( __dirname + "/template.html", "utf8" ),
 		diffHtml = "";
 
@@ -60,3 +48,24 @@ var markUpDiff = function() {
 		}).join( "\n" );
 	};
 }();
+
+module.exports = function() {
+	var template = fs.readFileSync( __dirname + "/template.html", "utf8" );
+
+	var repo = git(process.cwd());
+
+	console.log("repo: "+repo.path);
+
+	repo.commits(function(err, commits){
+
+		_.each(commits, function(commit){
+
+			var parent = _.first(commit.parents());
+			console.log(commit);
+			console.log(parent);
+
+		});
+
+	});
+
+};
