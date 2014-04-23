@@ -4,7 +4,7 @@ open = require 'open'
 git = require 'gift'
 _ = require 'underscore'
 
-parser = require('./diff-parser')
+dir = process.cwd()
 
 markupCode = (diffLines) ->
   diffClasses = {
@@ -27,38 +27,39 @@ markupCode = (diffLines) ->
     "<pre class='#{ diffClasses[line.charAt(0)] }'>#{ escape(line) }</pre>"
   .join("\n")
 
-diffLines = (diff) ->
-  _.chain(diff.split('\n'))
-  .filter (line) -> 
-    unless line 
-      return false
-    else if line.match(/^@@/) 
-      return false
-    else if line.match(/^\-\-\-/) 
-      return false
-    else if line.match(/^\+\+\+/) 
-      return false
-    else if line.match(/^index/) 
-      return false
-    return true
-  .value()
+gitDiffParser = (commitA, commitB, cb) ->
+  spawn = require('child_process').spawn
+  parser = require './parser'
 
-module.exports = () ->
   diffHtml = ""
-  dir = process.cwd()
+  out = ""
+  err = ""
+
+  child = spawn "git", ["diff", commitA.id, commitB.id]
+  child.stdout.on 'data', (chunk) -> out += chunk
+  child.stderr.on 'data', (chunk) -> err += chunk
+
+  child.on 'close', ->
+
+    files = parser.parse(out)
+
+    files.forEach((file, i) ->
+      diffHtml += "<h2>#{file.name}</h2>
+        <div class='file-diff'>
+          <div>
+            #{markupCode _.pluck(file.lines, 'text')}
+          </div>
+        </div>"
+    )
+
+    cb diffHtml
+
+generateHtml = (text) ->
   pageTemplate = fs.readFileSync "#{__dirname}/../template.html", "utf8"
+  fs.writeFileSync("#{dir}/tmp/diff.html", pageTemplate.replace("{{diff}}", text))
+  open "#{dir}/tmp/diff.html"
 
+module.exports = (useGit) ->
   repo = git dir
-
   repo.commits (err, commits) ->
-    repo.diff commits[1], commits[2], (err, diffs) ->
-      diffs.forEach((diff, i) ->
-        diffHtml += "<h2>#{diff.b_path}</h2>
-          <div class='file-diff'>
-            <div>
-              #{markupCode diffLines(diff.diff)}
-            </div>
-          </div>"
-      )
-      fs.writeFileSync("#{dir}/tmp/diff.html", pageTemplate.replace("{{diff}}", diffHtml))
-      open "#{dir}/tmp/diff.html"
+    gitDiffParser commits[1], commits[0], generateHtml
