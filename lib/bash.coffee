@@ -1,6 +1,6 @@
+module.exports = {
 
-Bash = () ->
-  _opt_to_args = (options) ->
+  options_to_args: (options) ->
     args = for key, val of options
       prepend = if key.length == 1 then "-" else "--"
       assign = if key.length == 1 then " " else "="
@@ -10,10 +10,6 @@ Bash = () ->
         "#{prepend}#{key}#{assign}#{val}"
       else
         ""
-    return args.join " "
+    args.join " "
 
-  return {
-    options_to_args: _opt_to_args
-  }
-
-module.exports = Bash()
+}
