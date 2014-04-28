@@ -3,8 +3,6 @@ chai.should()
 
 Bash = require '../lib/bash'
 
-console.log JSON.stringify(Bash)
-
 describe 'Bash', ->
   describe '#options_to_args', ->
     it 'should exist', ->
